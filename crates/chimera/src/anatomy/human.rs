@@ -429,6 +429,17 @@ impl<'de> Deserialize<'de> for BodyMix {
 }
 
 /// Neutral (schwa-like) articulation for the male template, unscaled coordinates.
+
+/// The velum's floor: the bottom of the lift range.
+pub const VELUM_LIFT_MIN: f64 = -1.25;
+
+/// How far the shut velum is lifted, 0–1, from the velum articulator: 0 down to -0.25 (the whole
+/// range speech uses), then linear to 1 at `VELUM_LIFT_MIN`.
+#[inline]
+pub fn velum_lift(velum: f64) -> f64 {
+    clamp((-0.25 - velum) / (-0.25 - VELUM_LIFT_MIN), 0.0, 1.0)
+}
+
 pub const NEUTRAL: HumanArtic = HumanArtic {
     jaw: 0.6,
     tb_x: 2.9,
@@ -748,6 +759,10 @@ impl HumanVocalTract {
 
         // ---- velum flap from PNS; angle from port area
         let v_open = clamp(a.velum / 1.2, 0.0, 1.0);
+        // lift: below the closed range (the rest is -0.15, the old floor -0.25) the shut velum
+        // arches higher, as in a yawn. Its tip stays on the wall (turning the flap moved the port
+        // window, and the pharynx's sections jumped). Nothing above -0.25 changes.
+        let v_lift = velum_lift(a.velum);
         let v_ang = (194.0 + 46.0 * v_open) * DEG;
         let v_len = 2.8 * k;
         sc.vel.clear();
@@ -755,7 +770,7 @@ impl HumanVocalTract {
         sc.vel_nasal.clear();
         for i in 0..=10 {
             let s = i as f64 / 10.0;
-            let sag = sin(s * PI) * k * (0.3 * v_open - 0.12);
+            let sag = sin(s * PI) * k * (0.3 * v_open - 0.12 - 0.3 * v_lift);
             let c = add(polar(self.pns, v_len * s, v_ang), v(0.0, -sag));
             let nrm = v(-sin(v_ang), cos(v_ang)); // oral-side normal (forward-down)
             let th = (0.48 - 0.2 * s) * k;

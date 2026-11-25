@@ -45,7 +45,7 @@ export const articulatorSlots: SlotsFn = (m, a, f, formants) => [
   formants.length >= 2 ? { label: "Tongue", value: nearestVowel(m, formants[0], formants[1]), color: V.green, ipa: true } : { label: "Tongue", value: "-", color: V.green },
   { label: "Jaw", value: a.jaw.toFixed(1), unit: "cm", color: V.red },
   { label: "Lips", value: a.lipAp.toFixed(1), unit: "cm", color: V.pink },
-  f.velumPort > 0.02 ? { label: "Soft palate", value: f.velumPort.toFixed(2), unit: "cm²", color: V.white } : { label: "Soft palate", value: "Shut", color: V.white },
+  f.velumPort > 0.02 ? { label: "Soft palate", value: f.velumPort.toFixed(2), unit: "cm²", color: V.white } : { label: "Soft palate", value: a.velum < -0.25 ? "Lifted" : "Shut", color: V.white },
 ];
 
 export function AnatomyView(props: { slots?: SlotsFn; info?: InfoFn; showFormants?: boolean; overlay?: OverlayFn }) {
@@ -201,7 +201,12 @@ export function AnatomyView(props: { slots?: SlotsFn; info?: InfoFn; showFormant
         else set({ lipAp: clamp(a0.lipAp - dy * 1.2, -0.4, 2.4), lipProt: clamp(a0.lipProt + dx, -0.2, 1.5) });
         break;
       case "velum":
-        set({ velum: clamp(a0.velum - dy * 0.9, 0, 1.4) });
+        // below -0.25 the shut velum lifts; a drag up from rest starts there, not in the dead band
+        {
+          const dv = -dy * 0.9;
+          const from = a0.velum > 0 || a0.velum < -0.25 ? a0.velum : dv < 0 ? -0.25 : 0;
+          set({ velum: clamp(from + dv, -1.25, 1.4) });
+        }
         break;
       case "larynx":
         set({ larynx: clamp(a0.larynx + dy, -1.6, 1.6) });

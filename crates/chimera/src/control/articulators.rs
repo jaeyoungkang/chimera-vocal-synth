@@ -37,7 +37,8 @@ pub const ARTIC_SPECS: [ArticSpec; N_ARTIC] = [
     spec(0.0, 1.0, 10.0),  // labiodental
     // the velum moves fast (it must seal within a few tens of ms after a nasal) and rests a
     // little past closed, so a closure seals in finite time instead of creeping to zero
-    spec(-0.25, 1.4, 12.0), // velum
+    // below -0.25 the shut velum lifts (`anatomy::human::velum_lift`)
+    spec(-1.25, 1.4, 12.0), // velum
     spec(-1.6, 1.6, 8.0),   // larynx
     spec(0.0, 1.0, 6.0),    // epilarynx
     spec(0.0, 1.0, 6.0),    // ventricular
