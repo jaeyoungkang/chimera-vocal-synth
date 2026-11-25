@@ -13,6 +13,7 @@ import { PianoRoll } from "./PianoRoll.tsx";
 import { SpectrumView } from "./SpectrumView.tsx";
 import { Chip, Screen } from "./Screen.tsx";
 import { LangPick } from "./LangPick.tsx";
+import { ToneMenu } from "./ToneMenu.tsx";
 import { EncoderPages } from "./Encoder.tsx";
 import { noteName } from "./VoiceControls.tsx";
 import type { InfoFn } from "./AnatomyView.tsx";
@@ -242,6 +243,7 @@ function SingActions() {
           if ((playing || pending) && !recording) sing(id);
         }}
       />
+      <ToneMenu />
       {canRecord() && (
         <Chip toggle={false} onClick={() => (recording ? stop() : sing(tune, true))} title="Sing it again and record the face into a video">
           {recording ? "Cancel" : "Record video"}

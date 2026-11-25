@@ -1,3 +1,4 @@
+import { ToneMenu } from "./components/ToneMenu.tsx";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { useStore } from "./store.ts";
 import { engine } from "../audio/AudioEngine.ts";
@@ -173,6 +174,7 @@ function PlayActions() {
       <Chip on={!voiced} onClick={() => setSource({ voiced: !voiced })}>
         Whisper
       </Chip>
+      <ToneMenu />
     </ActionBar>
   );
 }
